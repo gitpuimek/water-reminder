@@ -7,456 +7,319 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
-
   :root {
-    --bg: #0a1628;
-    --surface: #111e35;
-    --card: #162440;
-    --border: #1e3050;
-    --water: #38bdf8;
-    --water-dim: #1e6a8a;
-    --success: #34d399;
-    --warn: #fb923c;
-    --text: #e2eaf5;
-    --text-dim: #7a93b4;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-body: 'Sarabun', sans-serif;
+    --bg: #0a1628; --surface: #111e35; --card: #162440; --border: #1e3050;
+    --water: #38bdf8; --water-dim: #1e6a8a; --success: #34d399; --warn: #fb923c;
+    --text: #e2eaf5; --text-dim: #7a93b4;
+    --font-display: 'Space Grotesk', sans-serif; --font-body: 'Sarabun', sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    font-size: 16px;
-  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
 
   header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--surface);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); position: sticky; top: 0; z-index: 10;
   }
-
-  .logo {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--water);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-drop {
-    width: 28px; height: 28px;
-    background: var(--water);
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    flex-shrink: 0;
-  }
-
-  .refresh-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--water);
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: var(--font-body);
-    font-size: 14px;
-    transition: background 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
+  .logo { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--water); display: flex; align-items: center; gap: 10px; }
+  .logo-drop { width: 26px; height: 26px; background: var(--water); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); flex-shrink: 0; }
+  .refresh-btn { background: var(--card); border: 1px solid var(--border); color: var(--water); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: var(--font-body); font-size: 13px; }
   .refresh-btn:active { background: var(--border); }
 
-  main {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 16px;
+  /* Tabs */
+  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .tab {
+    flex: 1; padding: 12px; text-align: center; font-size: 14px; font-weight: 600;
+    color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s;
   }
+  .tab.active { color: var(--water); border-bottom-color: var(--water); }
 
-  /* Stats row */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
+  main { width: 100%; max-width: 600px; margin: 0 auto; padding: 16px; }
 
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 12px;
-  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  .stat-label {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
+  /* Cards */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; }
+  .stat-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--water); line-height: 1; }
+  .stat-unit { font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.4; }
 
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--water);
-    line-height: 1;
-  }
+  .water-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 20px; }
+  .water-tank { width: 60px; height: 96px; border: 2px solid var(--water-dim); border-radius: 8px; position: relative; overflow: hidden; flex-shrink: 0; }
+  .water-fill { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(180deg, var(--water) 0%, var(--water-dim) 100%); transition: height 1s ease; opacity: 0.8; }
+  .water-pct { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-display); font-size: 12px; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 1; }
+  .water-info h2 { font-family: var(--font-display); font-size: 17px; margin-bottom: 6px; line-height: 1.3; }
+  .water-info p { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
 
-  .stat-unit {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    line-height: 1.4;
-  }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .card-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; margin-bottom: 14px; }
 
-  /* Water card */
-  .water-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .water-tank {
-    width: 64px;
-    height: 100px;
-    border: 2px solid var(--water-dim);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .water-fill {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: linear-gradient(180deg, var(--water) 0%, var(--water-dim) 100%);
-    transition: height 1s ease;
-    opacity: 0.8;
-  }
-
-  .water-pct {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    z-index: 1;
-  }
-
-  .water-info h2 {
-    font-family: var(--font-display);
-    font-size: 18px;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  .water-info p {
-    color: var(--text-dim);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  /* Chart */
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--text);
-  }
-
-  /* History */
-  .history-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
+  .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 8px 10px 8px; font-weight: 600; }
+  td { padding: 10px 8px; border-top: 1px solid var(--border); vertical-align: middle; }
 
-  th {
-    text-align: left;
-    color: var(--text-dim);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 0 8px 10px 8px;
-    font-weight: 600;
-  }
-
-  td {
-    padding: 10px 8px;
-    border-top: 1px solid var(--border);
-    vertical-align: middle;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
   .badge-ok   { background: rgba(52,211,153,0.15); color: var(--success); }
   .badge-warn { background: rgba(251,146,60,0.15);  color: var(--warn); }
   .badge-info { background: rgba(56,189,248,0.15);  color: var(--water); }
 
-  .loading {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-dim);
-    font-size: 16px;
-  }
+  /* Daily summary cards */
+  .day-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .day-date { font-family: var(--font-display); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .day-detail { font-size: 13px; color: var(--text-dim); }
+  .day-ml { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--water); text-align: right; }
+  .day-ml span { display: block; font-size: 11px; color: var(--text-dim); font-family: var(--font-body); font-weight: 400; }
 
-  .error-msg {
-    background: rgba(251,146,60,0.1);
-    border: 1px solid rgba(251,146,60,0.3);
-    border-radius: 10px;
-    padding: 14px 16px;
-    color: var(--warn);
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
+  .loading { text-align: center; padding: 48px 20px; color: var(--text-dim); font-size: 15px; }
+  .error-msg { background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.3); border-radius: 10px; padding: 14px 16px; color: var(--warn); margin-bottom: 16px; font-size: 14px; }
+  .empty-msg { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 14px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    <div class="logo-drop"></div>
-    Water Reminder
-  </div>
-  <button class="refresh-btn" onclick="loadData()">↻ รีเฟรช</button>
+  <div class="logo"><div class="logo-drop"></div>Water Reminder</div>
+  <button class="refresh-btn" onclick="loadAll()">↻ รีเฟรช</button>
 </header>
 
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('today')">💧 วันนี้</div>
+  <div class="tab" onclick="switchTab('history')">📅 ประวัติ</div>
+</div>
+
 <main>
-  <div id="error" style="display:none" class="error-msg"></div>
-  <div id="loading" class="loading">⏳ กำลังโหลดข้อมูล...</div>
-  <div id="content" style="display:none">
-
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-label">ดื่มวันนี้</div>
-        <div class="stat-value" id="total-today">0</div>
-        <div class="stat-unit">มล.</div>
+  <!-- วันนี้ -->
+  <div id="tab-today" class="tab-content active">
+    <div id="error-today" style="display:none" class="error-msg"></div>
+    <div id="loading-today" class="loading">⏳ กำลังโหลด...</div>
+    <div id="content-today" style="display:none">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">ดื่มวันนี้</div>
+          <div class="stat-value" id="total-today">0</div>
+          <div class="stat-unit">มล.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">ครบเป้า</div>
+          <div class="stat-value" id="rounds-ok">0</div>
+          <div class="stat-unit">จาก <span id="rounds-total">0</span> รอบ</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">ล่าสุด</div>
+          <div class="stat-value" style="font-size:20px" id="last-update">-</div>
+          <div class="stat-unit">น.</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">ครบเป้า</div>
-        <div class="stat-value" id="rounds-ok">0</div>
-        <div class="stat-unit">จาก <span id="rounds-total">0</span> รอบ</div>
+      <div class="water-card">
+        <div class="water-tank">
+          <div class="water-fill" id="water-fill" style="height:0%"></div>
+          <div class="water-pct" id="water-pct">0%</div>
+        </div>
+        <div class="water-info">
+          <h2 id="status-text">รอข้อมูล...</h2>
+          <p id="status-detail">กำลังโหลดข้อมูล</p>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">ล่าสุด</div>
-        <div class="stat-value" style="font-size:20px" id="last-update">-</div>
-        <div class="stat-unit">น.</div>
+      <div class="chart-card">
+        <div class="card-title">ปริมาณน้ำแต่ละรอบ (วันนี้)</div>
+        <canvas id="drinkChart" height="160"></canvas>
+      </div>
+      <div class="history-card">
+        <div class="card-title">รายการวันนี้</div>
+        <table>
+          <thead><tr><th>เวลา</th><th>เหตุการณ์</th><th>ดื่ม</th><th>สถานะ</th></tr></thead>
+          <tbody id="history-table"></tbody>
+        </table>
       </div>
     </div>
+  </div>
 
-    <div class="water-card">
-      <div class="water-tank">
-        <div class="water-fill" id="water-fill" style="height:0%"></div>
-        <div class="water-pct" id="water-pct">0%</div>
+  <!-- ประวัติรายวัน -->
+  <div id="tab-history" class="tab-content">
+    <div id="error-history" style="display:none" class="error-msg"></div>
+    <div id="loading-history" class="loading">⏳ กำลังโหลด...</div>
+    <div id="content-history" style="display:none">
+      <div class="chart-card">
+        <div class="card-title">ปริมาณน้ำรายวัน (7 วันล่าสุด)</div>
+        <canvas id="weekChart" height="160"></canvas>
       </div>
-      <div class="water-info">
-        <h2 id="status-text">รอข้อมูล...</h2>
-        <p id="status-detail">กำลังโหลดข้อมูลจาก Google Sheets</p>
-      </div>
+      <div id="day-list"></div>
     </div>
-
-    <div class="chart-card">
-      <div class="card-title">ปริมาณน้ำแต่ละรอบ (วันนี้)</div>
-      <canvas id="drinkChart" height="160"></canvas>
-    </div>
-
-    <div class="history-card">
-      <div class="card-title">ประวัติการดื่มน้ำ</div>
-      <table>
-        <thead>
-          <tr>
-            <th>เวลา</th>
-            <th>เหตุการณ์</th>
-            <th>ดื่ม</th>
-            <th>สถานะ</th>
-          </tr>
-        </thead>
-        <tbody id="history-table"></tbody>
-      </table>
-    </div>
-
   </div>
 </main>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPDO1C0Gz2e9a4mED3LyyBU6JIqi69RKyi1HHuXUzrfjvGR_Bhnf_PwQBW7kpwWRo10g/exec";
-let chart = null;
+const URL = "https://script.google.com/macros/s/AKfycbwPDO1C0Gz2e9a4mED3LyyBU6JIqi69RKyi1HHuXUzrfjvGR_Bhnf_PwQBW7kpwWRo10g/exec";
+let chartToday = null, chartWeek = null;
 
-function formatTime(dateStr) {
-  const d = new Date(dateStr);
-  if (isNaN(d)) return dateStr;
-  return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['today','history'][i] === tab));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'history') loadHistory();
 }
 
-function isToday(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return d.getDate() === now.getDate() &&
-         d.getMonth() === now.getMonth() &&
-         d.getFullYear() === now.getFullYear();
+function formatTime(d) {
+  const dt = new Date(d);
+  return isNaN(dt) ? d : dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 }
 
-function eventLabel(event) {
-  const map = {
-    'start': 'เครื่องเริ่มทำงาน',
-    'bottle_placed': 'วางขวดน้ำ',
-    'bottle_empty': 'น้ำหมดขวด',
-    'drink_ok': 'ดื่มน้ำครบ',
-    'drink_alert': 'ดื่มน้ำไม่ครบ',
-    'test': 'ทดสอบ'
-  };
-  return map[event] || event;
+function formatDate(d) {
+  const dt = new Date(d);
+  if (isNaN(dt)) return d;
+  return dt.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
 }
 
-function badgeClass(event) {
-  if (event === 'drink_ok' || event === 'bottle_empty') return 'badge-ok';
-  if (event === 'drink_alert') return 'badge-warn';
+function eventLabel(e) {
+  return { bottle_placed:'วางขวดน้ำ', bottle_empty:'น้ำหมดขวด', drink_ok:'ดื่มน้ำครบ', drink_alert:'ดื่มน้ำไม่ครบ' }[e] || e;
+}
+
+function badgeClass(e) {
+  if (e === 'drink_ok' || e === 'bottle_empty') return 'badge-ok';
+  if (e === 'drink_alert') return 'badge-warn';
   return 'badge-info';
 }
 
-async function loadData() {
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('content').style.display = 'none';
-  document.getElementById('error').style.display = 'none';
+async function loadAll() { loadToday(); }
 
+async function loadToday() {
+  document.getElementById('loading-today').style.display = 'block';
+  document.getElementById('content-today').style.display = 'none';
+  document.getElementById('error-today').style.display = 'none';
   try {
-    const res = await fetch(APPS_SCRIPT_URL);
+    const res = await fetch(URL + '?type=log');
     const rows = await res.json();
+    const drinks = rows.filter(r => r.event === 'drink_ok' || r.event === 'drink_alert');
+    const total = drinks.reduce((s, r) => s + (parseFloat(r.drunk_ml) || 0), 0);
+    const ok = drinks.filter(r => r.event === 'drink_ok').length;
 
-    const todayDrinks = rows.filter(r => isToday(r.time) && (r.event === 'drink_ok' || r.event === 'drink_alert'));
-    const totalDrunk = todayDrinks.reduce((s, r) => s + (parseFloat(r.drunk_ml) || 0), 0);
-    const roundsOk = todayDrinks.filter(r => r.event === 'drink_ok').length;
-    const roundsTotal = todayDrinks.length;
+    document.getElementById('total-today').textContent = Math.round(total);
+    document.getElementById('rounds-ok').textContent = ok;
+    document.getElementById('rounds-total').textContent = drinks.length;
+    document.getElementById('last-update').textContent = rows.length ? formatTime(rows[rows.length-1].time) : '-';
 
-    document.getElementById('total-today').textContent = Math.round(totalDrunk);
-    document.getElementById('rounds-ok').textContent = roundsOk;
-    document.getElementById('rounds-total').textContent = roundsTotal;
-
-    const lastRow = rows[rows.length - 1];
-    document.getElementById('last-update').textContent = lastRow ? formatTime(lastRow.time) : '-';
-
-    const pct = Math.min(100, Math.round((totalDrunk / Math.max(90 * (roundsTotal || 1), 1)) * 100));
+    const pct = Math.min(100, Math.round((total / Math.max(90 * (drinks.length || 1), 1)) * 100));
     document.getElementById('water-fill').style.height = pct + '%';
     document.getElementById('water-pct').textContent = pct + '%';
 
-    const lastDrink = todayDrinks[todayDrinks.length - 1];
-    if (!lastDrink) {
+    const last = drinks[drinks.length - 1];
+    if (!last) {
       document.getElementById('status-text').textContent = 'ยังไม่มีข้อมูลวันนี้';
       document.getElementById('status-detail').textContent = 'วางขวดน้ำบนเครื่องเพื่อเริ่มจับเวลา';
-    } else if (lastDrink.event === 'drink_ok') {
+    } else if (last.event === 'drink_ok') {
       document.getElementById('status-text').textContent = '✅ ดื่มน้ำครบรอบล่าสุด';
-      document.getElementById('status-detail').textContent = `ดื่มไป ${lastDrink.drunk_ml} มล. เมื่อ ${formatTime(lastDrink.time)}`;
+      document.getElementById('status-detail').textContent = `ดื่มไป ${last.drunk_ml} มล. เมื่อ ${formatTime(last.time)}`;
     } else {
       document.getElementById('status-text').textContent = '⚠️ ดื่มน้ำไม่ครบ';
-      document.getElementById('status-detail').textContent = `ดื่มไปแค่ ${lastDrink.drunk_ml} มล. จาก 90 มล. เมื่อ ${formatTime(lastDrink.time)}`;
+      document.getElementById('status-detail').textContent = `ดื่มไปแค่ ${last.drunk_ml} มล. จาก 90 มล. เมื่อ ${formatTime(last.time)}`;
     }
 
-    const labels = todayDrinks.map((r, i) => `รอบ ${i + 1}`);
-    const values = todayDrinks.map(r => parseFloat(r.drunk_ml) || 0);
-    const colors = todayDrinks.map(r => r.event === 'drink_ok' ? 'rgba(52,211,153,0.8)' : 'rgba(251,146,60,0.8)');
-
-    if (chart) chart.destroy();
-    chart = new Chart(document.getElementById('drinkChart').getContext('2d'), {
+    if (chartToday) chartToday.destroy();
+    chartToday = new Chart(document.getElementById('drinkChart').getContext('2d'), {
       type: 'bar',
       data: {
-        labels,
+        labels: drinks.map((_, i) => `รอบ ${i+1}`),
         datasets: [{
-          label: 'ดื่มไป (มล.)',
-          data: values,
-          backgroundColor: colors,
-          borderRadius: 6,
-          borderSkipped: false,
+          label: 'ดื่มไป (มล.)', data: drinks.map(r => parseFloat(r.drunk_ml)||0),
+          backgroundColor: drinks.map(r => r.event==='drink_ok' ? 'rgba(52,211,153,0.8)' : 'rgba(251,146,60,0.8)'),
+          borderRadius: 6, borderSkipped: false,
         }, {
-          label: 'เป้าหมาย 90 มล.',
-          data: values.map(() => 90),
-          type: 'line',
-          borderColor: 'rgba(56,189,248,0.5)',
-          borderDash: [6, 4],
-          pointRadius: 0,
-          fill: false,
-          borderWidth: 1.5,
+          label: 'เป้าหมาย 90 มล.', data: drinks.map(() => 90),
+          type: 'line', borderColor: 'rgba(56,189,248,0.5)', borderDash: [6,4],
+          pointRadius: 0, fill: false, borderWidth: 1.5,
         }]
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { labels: { color: '#7a93b4', font: { family: 'Sarabun', size: 12 }, boxWidth: 20 } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} มล.` } }
-        },
+        plugins: { legend: { labels: { color: '#7a93b4', font: { family:'Sarabun', size:12 }, boxWidth:20 } } },
         scales: {
-          x: { ticks: { color: '#7a93b4', font: { size: 12 } }, grid: { color: '#1e3050' } },
-          y: {
-            ticks: { color: '#7a93b4', font: { size: 12 }, callback: v => v + ' มล.' },
-            grid: { color: '#1e3050' },
-            min: 0, max: 120
-          }
+          x: { ticks: { color:'#7a93b4', font:{size:12} }, grid: { color:'#1e3050' } },
+          y: { ticks: { color:'#7a93b4', callback: v => v+' มล.' }, grid: { color:'#1e3050' }, min:0, max:120 }
         }
       }
     });
 
     const tbody = document.getElementById('history-table');
-    const displayRows = rows.filter(r => r.event && r.event !== 'start' && r.event !== 'test').reverse().slice(0, 20);
-    tbody.innerHTML = displayRows.map(r => `
+    const display = rows.filter(r => r.event && r.event !== 'start' && r.event !== 'test').reverse().slice(0, 20);
+    tbody.innerHTML = display.map(r => `
       <tr>
         <td>${formatTime(r.time)}</td>
         <td>${eventLabel(r.event)}</td>
-        <td>${r.drunk_ml ? r.drunk_ml + ' มล.' : '-'}</td>
-        <td><span class="badge ${badgeClass(r.event)}">${r.event === 'drink_ok' ? 'ผ่าน' : r.event === 'drink_alert' ? 'ไม่ครบ' : 'ข้อมูล'}</span></td>
-      </tr>
-    `).join('');
+        <td>${r.drunk_ml ? r.drunk_ml+' มล.' : '-'}</td>
+        <td><span class="badge ${badgeClass(r.event)}">${r.event==='drink_ok'?'ผ่าน':r.event==='drink_alert'?'ไม่ครบ':'ข้อมูล'}</span></td>
+      </tr>`).join('');
 
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-
-  } catch (err) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    document.getElementById('error').textContent = 'โหลดข้อมูลไม่ได้: ' + err.message;
+    document.getElementById('loading-today').style.display = 'none';
+    document.getElementById('content-today').style.display = 'block';
+  } catch(err) {
+    document.getElementById('loading-today').style.display = 'none';
+    document.getElementById('error-today').style.display = 'block';
+    document.getElementById('error-today').textContent = 'โหลดไม่ได้: ' + err.message;
   }
 }
 
-loadData();
-setInterval(loadData, 60000);
+async function loadHistory() {
+  document.getElementById('loading-history').style.display = 'block';
+  document.getElementById('content-history').style.display = 'none';
+  document.getElementById('error-history').style.display = 'none';
+  try {
+    const res = await fetch(URL + '?type=summary');
+    const rows = await res.json();
+
+    if (!rows.length) {
+      document.getElementById('loading-history').style.display = 'none';
+      document.getElementById('content-history').style.display = 'block';
+      document.getElementById('day-list').innerHTML = '<div class="empty-msg">ยังไม่มีข้อมูลประวัติ<br>ระบบจะสรุปทุกเที่ยงคืน</div>';
+      return;
+    }
+
+    const last7 = rows.slice(-7);
+
+    if (chartWeek) chartWeek.destroy();
+    chartWeek = new Chart(document.getElementById('weekChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: last7.map(r => formatDate(r.date)),
+        datasets: [{
+          label: 'ดื่มรวม (มล.)', data: last7.map(r => parseFloat(r.total_ml)||0),
+          backgroundColor: last7.map(r => r.pass && r.pass.includes('✅') ? 'rgba(52,211,153,0.8)' : 'rgba(251,146,60,0.8)'),
+          borderRadius: 6, borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color:'#7a93b4', font:{family:'Sarabun',size:12}, boxWidth:20 } } },
+        scales: {
+          x: { ticks: { color:'#7a93b4', font:{size:11} }, grid: { color:'#1e3050' } },
+          y: { ticks: { color:'#7a93b4', callback: v => v+' มล.' }, grid: { color:'#1e3050' }, min:0 }
+        }
+      }
+    });
+
+    document.getElementById('day-list').innerHTML = [...rows].reverse().map(r => `
+      <div class="day-card">
+        <div>
+          <div class="day-date">${formatDate(r.date)}</div>
+          <div class="day-detail">ครบเป้า ${r.rounds_ok}/${r.rounds_total} รอบ &nbsp; ${r.pass||''}</div>
+        </div>
+        <div class="day-ml">${Math.round(r.total_ml)||0}<span>มล.</span></div>
+      </div>`).join('');
+
+    document.getElementById('loading-history').style.display = 'none';
+    document.getElementById('content-history').style.display = 'block';
+  } catch(err) {
+    document.getElementById('loading-history').style.display = 'none';
+    document.getElementById('error-history').style.display = 'block';
+    document.getElementById('error-history').textContent = 'โหลดไม่ได้: ' + err.message;
+  }
+}
+
+loadToday();
+setInterval(loadToday, 60000);
 </script>
 </body>
 </html>
