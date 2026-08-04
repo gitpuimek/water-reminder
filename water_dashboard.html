@@ -181,7 +181,7 @@ async function loadToday() {
     if (!last) {
       document.getElementById('status-text').textContent = 'ยังไม่มีข้อมูลวันนี้';
       document.getElementById('status-detail').textContent = 'วางขวดน้ำบนเครื่องเพื่อเริ่มจับเวลา';
-    } else if (last.event === 'drink_ok') {
+      } else if (last.event === 'drink_ok' || (last.event === 'bottle_empty' && parseFloat(last.drunk_ml) >= 90)) {
       document.getElementById('status-text').textContent = '✅ ดื่มน้ำครบรอบล่าสุด';
       document.getElementById('status-detail').textContent = 'ดื่มไป ' + last.drunk_ml + ' มล. เมื่อ ' + formatTime(last.time);
     } else {
@@ -196,7 +196,7 @@ async function loadToday() {
         labels: drinks.map((_, i) => 'รอบ ' + (i+1)),
         datasets: [{
           label: 'ดื่มไป (มล.)', data: drinks.map(r => parseFloat(r.drunk_ml)||0),
-          backgroundColor: drinks.map(r => r.event==='drink_ok' ? 'rgba(52,211,153,0.8)' : 'rgba(251,146,60,0.8)'),
+          backgroundColor: drinks.map(r => (r.event==='drink_ok' || (r.event==='bottle_empty' && parseFloat(r.drunk_ml) >= 90)) ? 'rgba(52,211,153,0.8)' : 'rgba(251,146,60,0.8)'),
           borderRadius: 6, borderSkipped: false,
         }, {
           label: 'เป้าหมาย 90 มล.', data: drinks.map(() => 90),
