@@ -105,7 +105,7 @@
       <div class="history-card">
         <div class="card-title">รายการวันนี้</div>
         <table>
-          <thead><tr><th>เวลา</th><th>เหตุการณ์</th><th>ดื่ม</th><th>สถานะ</th></tr></thead>
+          <thead><tr><th>เวลา</th><th>เหตุการณ์</th><th>น้ำในขวด</th><th>ดื่ม</th><th>สถานะ</th></tr></thead>
           <tbody id="history-table"></tbody>
         </table>
       </div>
@@ -221,7 +221,8 @@ async function loadToday() {
       '<tr>' +
       '<td>' + formatTime(r.time) + '</td>' +
       '<td>' + eventLabel(r.event) + '</td>' +
-      '<td>' + (r.drunk_ml ? r.drunk_ml+' มล.' : '-') + '</td>' +
+      '<td>' + (r.volume_ml && parseFloat(r.volume_ml) > 0 ? parseFloat(r.volume_ml).toFixed(0)+' มล.' : '-') + '</td>' +
+      '<td>' + (r.drunk_ml && parseFloat(r.drunk_ml) > 0 ? parseFloat(r.drunk_ml).toFixed(0)+' มล.' : '-') + '</td>' +
       '<td><span class="badge ' + badgeClass(r.event) + '">' + (r.event==='drink_ok'?'ผ่าน':r.event==='drink_alert'?'ไม่ครบ':'ข้อมูล') + '</span></td>' +
       '</tr>'
     ).join('');
