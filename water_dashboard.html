@@ -164,7 +164,7 @@ async function loadToday() {
   try {
     const res = await fetch(SCRIPT_URL + '?type=log');
     const rows = await res.json();
-    const drinks = rows.filter(r => r.event === 'drink_ok' || r.event === 'drink_alert');
+    const drinks = rows.filter(r => r.event === 'drink_ok' || r.event === 'drink_alert' || r.event === 'bottle_empty');
     const total = drinks.reduce((s, r) => s + (parseFloat(r.drunk_ml) || 0), 0);
     const ok = drinks.filter(r => r.event === 'drink_ok').length;
 
